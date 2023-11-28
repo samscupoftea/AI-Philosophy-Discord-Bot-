@@ -1,4 +1,3 @@
-const token = "MTE3OTExMzc0OTcxNDU3MTI2NA.Gc8JbF.B_1-__nWciC53RLqKxrSEQGc5PnZo8OID_BREE";
 const { Client, GatewayIntentBits } = require("discord.js");
 const client = new Client({
     intents: [
