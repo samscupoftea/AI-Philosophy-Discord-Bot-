@@ -1,4 +1,19 @@
 const { Client, GatewayIntentBits } = require("discord.js");
+
+require('dotenv').config();
+
+const token = process.env.DISCORD_TOKEN;
+
+if (!token) {
+    console.error("Please provide a valid Discord bot token in the .env file.");
+    process.exit(1);
+}
+//debugging 
+const dotenv = require('dotenv');
+dotenv.config();
+console.log('Discord token from .env:', process.env.DISCORD_TOKEN);
+
+
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
