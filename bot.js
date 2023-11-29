@@ -1,17 +1,42 @@
-const { Client, GatewayIntentBits } = require("discord.js");
+// import OpenAI from "openai";
+import { OpenAIApi, Configuration } from "openai";
+// console.log(OpenAI.Assistants)
 
-require('dotenv').config();
 
+import { Client, GatewayIntentBits } from "discord.js"
+
+import { config as dotenvConfig } from 'dotenv';
+dotenvConfig();
 const token = process.env.DISCORD_TOKEN;
+
+const openaiApiKey = process.env.OPEN_API_KEY;
+const configuration = new Configuration({
+    apiKey: openaiApiKey,
+});
+
+//async code 
+console.log(OpenAI)
+
+async function ask(prompt){
+    const response = await  OpenAI.createCompletion({
+        model: "gpt-3.5-turbo",
+        prompt,
+
+
+})
+
+const answer =response.data.choices[0].text;
+console.log(answer); 
+};
+ask('hello')
 
 if (!token) {
     console.error("Please provide a valid Discord bot token in the .env file.");
     process.exit(1);
 }
-//debugging 
-const dotenv = require('dotenv');
-dotenv.config();
-console.log('Discord token from .env:', process.env.DISCORD_TOKEN);
+
+
+
 
 
 const client = new Client({
@@ -46,3 +71,4 @@ client.on('messageCreate', (msg) => {
         repliedUsers[msg.author.id] = true;
     }
 });
+
