@@ -71,7 +71,7 @@
     "vary": "^1.1.2"
   },
   "scripts": {
-    "start": "node bot.js"
+    "start": "node bot.cjs"
   },
   "author": "",
   "license": "ISC"
