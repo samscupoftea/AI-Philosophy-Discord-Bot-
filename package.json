@@ -71,8 +71,12 @@
     "vary": "^1.1.2"
   },
   "scripts": {
-    "start": "node bot.cjs"
+    "start": "node bot.cjs",
+    "devStart": "nodemon bot.cjs"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
 }
