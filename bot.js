@@ -1,29 +1,11 @@
-// // Discord page
-// const dotenv = require('dotenv');
-// const Discord = require('discord.js');
-// const Client = Discord.Client;
-// const GatewayIntentBits = Discord.GatewayIntentBits;
-// const main = require('./index.cjs')
-// dotenv.config();
 
-
-
-
-
-// client.on('ready', () => {
-//   console.log('THE BOT IS ONLINE')
-// });
-
-
-
-
-
-// client.login(process.env.DISCORD_TOKEN);
 
 
 import dotenv from 'dotenv';
 import { Client, GatewayIntentBits } from 'discord.js';
-import { OpenAI } from 'openai';
+import main from './index.cjs';
+
+
 
 dotenv.config();
 
@@ -35,9 +17,6 @@ const client = new Client({
   ],
 });
 
-const openai = new OpenAI({
-  apiKey: process.env.OPEN_API_KEY,
-});
 
 client.once('ready', () => {
   console.log('Bot is online');
@@ -56,6 +35,10 @@ client.on('messageCreate', async (message) => {
 
   let prevMessages = await message.channel.messages.fetch({ limit: 12 });
 
+  console.log(prevMessages)
+
+  prevMessages 
+
   prevMessages.forEach((msg) => {
     if (!msg.author.bot || msg.author.id === client.user.id) {
       conversation.push({
@@ -65,30 +48,14 @@ client.on('messageCreate', async (message) => {
     }
   });
 
-
-  console.log(userMessage);
-
+  main(conversation, userMessage)
 
 
-  try {
-    const reponse = await openai.chat.completions.create({
-      model: "gpt-4",
-      messages: conversation,
-      stream: true,
-    });
+ 
 
-    let botReply = '';
-    for await (const chunk of stream) {
-      botReply += chunk.choices[0]?.delta?.content || '';
-    }
 
-    if (botReply) {
-      message.reply(botReply.trim());
-    }
-  } catch (error) {
-    console.error('OpenAI Error:', error.message);
-    message.reply("Apologies, but I'm unable to respond right now.");
-  }
 });
+
+
 
 client.login(process.env.DISCORD_TOKEN);
