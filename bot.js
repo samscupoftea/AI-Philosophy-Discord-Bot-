@@ -1,26 +1,3 @@
-// // Discord page
-// const dotenv = require('dotenv');
-// const Discord = require('discord.js');
-// const Client = Discord.Client;
-// const GatewayIntentBits = Discord.GatewayIntentBits;
-// const main = require('./index.cjs')
-// dotenv.config();
-
-
-
-
-
-// client.on('ready', () => {
-//   console.log('THE BOT IS ONLINE')
-// });
-
-
-
-
-
-// client.login(process.env.DISCORD_TOKEN);
-
-
 import dotenv from 'dotenv';
 import { Client, GatewayIntentBits } from 'discord.js';
 import { OpenAI } from 'openai';
@@ -47,14 +24,10 @@ client.on('messageCreate', async (message) => {
   if (message.author.bot) return;
   const userMessage = message.content;
  
-  
   let conversation = [];
-  conversation.push({
-    role: 'system',
-    content: userMessage,
-  });
 
   let prevMessages = await message.channel.messages.fetch({ limit: 12 });
+  prevMessages = prevMessages.reverse();
 
   prevMessages.forEach((msg) => {
     if (!msg.author.bot || msg.author.id === client.user.id) {
@@ -65,20 +38,23 @@ client.on('messageCreate', async (message) => {
     }
   });
 
+  // Add the latest user message at the end of the conversation
+  conversation.push({
+    role: 'user',
+    content: userMessage,
+  });
 
   console.log(userMessage);
 
-
-
   try {
-    const reponse = await openai.chat.completions.create({
+    const response = await openai.chat.completions.create({
       model: "gpt-4",
       messages: conversation,
       stream: true,
     });
 
     let botReply = '';
-    for await (const chunk of stream) {
+    for await (const chunk of response) {
       botReply += chunk.choices[0]?.delta?.content || '';
     }
 
