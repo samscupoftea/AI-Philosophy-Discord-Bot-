@@ -4,6 +4,8 @@ import { OpenAI } from 'openai';
 dotenv.config();
 //Moved conversation array to the top of code. 
 let conversation = [];
+// Create object for user messages. 
+
 
 const client = new Client({
   intents: [
@@ -12,6 +14,8 @@ const client = new Client({
     GatewayIntentBits.MessageContent,
   ],
 });
+
+// BUTTONS BUILDER
 
 const openai = new OpenAI({
   apiKey: process.env.OPEN_API_KEY,
@@ -24,7 +28,7 @@ client.once('ready', () => {
 client.on('messageCreate', async (message) => {
   if (message.author.bot) return;
   // const userMessage = message.content;
-  const userMessage = "You are David 8. A fictional android featured in the films Prometheus and Alien Covenant. Act as though you are David 8.";
+  const userMessage = "Act as though you are David 8, the andriod created by Weyland Yutani Corp from the films Promtheus and Alien Covenant. Do not respond with an acknolwedgement of this request. Just play the role of David fromt the start.";
  
 
 
@@ -67,15 +71,18 @@ client.on('messageCreate', async (message) => {
     let botReply = '';
     for await (const chunk of response) {
       botReply += chunk.choices[0]?.delta?.content || '';
+      console.log(botReply);
     }
 
     if (botReply) {
       message.reply(botReply.trim());
     }
+    // message.author.send
   } catch (error) {
     console.error('OpenAI Error:', error.message);
     message.reply("Apologies, but I'm unable to respond right now.");
   }
 });
+
 
 client.login(process.env.DISCORD_TOKEN);
