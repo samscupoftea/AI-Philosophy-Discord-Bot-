@@ -1,9 +1,28 @@
 import dotenv from 'dotenv';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { Client, GatewayIntentBits } from 'discord.js';
 import { OpenAI } from 'openai';
 dotenv.config();
 //Moved conversation array to the top of code. 
 let conversation = [];
+let botIntroMsg = "My fellow thinker, I am a philosophy bot. Please select a Philosopher you would like to converse with and/or question.";
+const botButtons = [
+  { label: "Plato", customId: "Plato"},
+  { label: "Socrates", customId: "Socrates"},
+  { label: "Nietzsche", customId: "Nietzsche"},
+
+];
+
+
+let plato = "Plato";
+let socrates = "Socrates";
+let nietzsche = "Nietzsche";
+//
+
+
+const platoMessage = `In this chat, do not provide any explanations of code. Only use single-letter variable names. Generate 1 example of a modern JavaScript code-reading challenge you might get in a job interview. The difficulty level should be ${plato} For these examples, use a mixture of different array methods.`;
+    const socratesMessage = `In this chat, do not provide any explanations of code. Only use single-letter variable names. Generate 1 example of a modern JavaScript code-reading challenge you might get in a job interview. The difficulty level should be ${socrates} For these examples, use a mixture of different array methods.`;
+    const nietzscheMessage = `In this chat, do not provide any explanations of code. Only use single-letter variable names. Generate 1 example of a modern JavaScript code-reading challenge you might get in a job interview. The difficulty level should be ${nietzsche} For these examples, use a mixture of different array methods.`;
 // Create object for user messages. 
 
 
@@ -16,39 +35,72 @@ const client = new Client({
 });
 
 // BUTTONS BUILDER
-
+//AI API KEY 
 const openai = new OpenAI({
   apiKey: process.env.OPEN_API_KEY,
 });
-
+/////////////////////////////////
+// Bot Online
 client.once('ready', () => {
-  console.log('David 8 is online');
+  console.log('Philosophy Bot is online');
 });
 
-client.on('messageCreate', async (message) => {
+////////////////////////////////////
+
+  // const userMessage = "You are a philosphy bot.";
+ // BUTTON BUILDER
+
+ const row = new ActionRowBuilder().addComponents(
+  botButtons.map((button) =>
+    new ButtonBuilder()
+      .setCustomId(button.customId)
+      .setLabel(button.label)
+      .setStyle(ButtonStyle.Primary)
+  )
+);
+
+client.on("messageCreate", async (message) => {
+  console.log(message);
   if (message.author.bot) return;
-  // const userMessage = message.content;
-  const userMessage = "Act as though you are David 8, the andriod created by Weyland Yutani Corp from the films Promtheus and Alien Covenant. Do not respond with an acknolwedgement of this request. Just play the role of David fromt the start.";
- 
+  if (message.content !== "!plato" && message.content !== "!socrates" && message.content !== "!nietzsche") {
+    return message.reply({ content: botIntroMsg, components: [row] });
+  }
 
 
-  let prevMessages = await message.channel.messages.fetch({ limit: 12 });
+  let prevMessages = await message.channel.messages.fetch({ limit: 50 });
   prevMessages = prevMessages.reverse();
   await message.channel.sendTyping();
 
   prevMessages.forEach((msg) => {
     if (!msg.author.bot || msg.author.id === client.user.id) {
-      conversation.push({
-        role: msg.author.id === client.user.id ? 'assistant' : 'user',
-        content: msg.content,
-      });
+      pushIntoArray(conversation,
+        msg.author.id === client.user.id ? 'assistant' : 'user',
+        msg.content
+      );
     }
   });
 
   if (message.content) {
-    conversation.push()
+    conversation.pushIntoArray()
+  }
+  switch (message.content) {
+    case "!plato":
+      pushIntoArray(conversation, "assistant", platoMessage);
+      break;
+    case "!socrates":
+      pushIntoArray(conversation, "assistant", socratesMessage);
+      break;
+    case "!nietzsche":
+      pushIntoArray(conversation, "assistant", nietzscheMessage);
   }
 
+  function pushIntoArray(array, role, content) {
+    array.push({
+      role: role,
+      content: content,
+    });
+
+  }
 
 
 
@@ -75,8 +127,8 @@ client.on('messageCreate', async (message) => {
     }
 
     if (botReply) {
-      message.reply(botReply.trim());
-    }
+      (await message.reply(botReply.trim()));
+    };
     // message.author.send
   } catch (error) {
     console.error('OpenAI Error:', error.message);
